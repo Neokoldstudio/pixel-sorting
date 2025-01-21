@@ -30,16 +30,23 @@ fn main() {
 
     // grayscale
     let gray_img = convert_to_luminance(&img);
+    gray_img
+        .save("output/gray_scale_before_sort.png")
+        .expect("Failed to save image");
 
     // masque de luminance, permet de conserver la structure de l'image lors du tri.
     let mask = create_luminance_mask(&gray_img, low_thresh, high_thresh);
-
-    //mask.save("output/mask.png").expect("Failed to save image"); //-->FOR DEBUG
-    //tri des pixels selon le masque de luminance (blanc = 255->pixel a trier, noir = 0->ne pas trier), les pixels sont triés par bandes continues de pixels blancs.
+    mask.save("output/mask.png").expect("Failed to save image"); //-->FOR DEBUG
+                                                                 //tri des pixels selon le masque de luminance (blanc = 255->pixel a trier, noir = 0->ne pas trier), les pixels sont triés par bandes continues de pixels blancs.
     let sorted_img = sort_image_using_mask(&img, &mask);
 
     sorted_img
         .save("output/output.png")
+        .expect("Failed to save image");
+
+    let gray_sorted = convert_to_luminance(&sorted_img);
+    gray_sorted
+        .save("output/gray_scale_after_sort.png")
         .expect("Failed to save image");
 }
 
@@ -111,32 +118,24 @@ fn sort_image_using_mask(orig_img: &RgbaImage, mask: &GrayImage) -> RgbaImage {
                 row.push(orig_img.get_pixel(x, y).0);
                 indices.push(x);
             } else {
-                if !row.is_empty() {
-                    row.sort_by_key(|&p| {
-                        let luminance =
-                            (0.299 * p[0] as f32 + 0.587 * p[1] as f32 + 0.114 * p[2] as f32) as u8;
-                        luminance
-                    });
-                    for (i, &x_pos) in indices.iter().enumerate() {
-                        sorted_img.put_pixel(x_pos, y, image::Rgba(row[i]));
-                    }
-                    row.clear();
-                    indices.clear();
-                }
+                sort_stripe(&mut sorted_img, &mut row, &mut indices, y);
             }
         }
-        if !row.is_empty() {
-            row.sort_by_key(|&p| {
-                let luminance =
-                    (0.299 * p[0] as f32 + 0.587 * p[1] as f32 + 0.114 * p[2] as f32) as u8;
-                luminance
-            });
-            for (i, &x_pos) in indices.iter().enumerate() {
-                sorted_img.put_pixel(x_pos, y, image::Rgba(row[i]));
-            }
-            row.clear();
-            indices.clear();
-        }
+        sort_stripe(&mut sorted_img, &mut row, &mut indices, y);
     }
     sorted_img
+}
+
+fn sort_stripe(sorted_img: &mut RgbaImage, row: &mut Vec<[u8; 4]>, indices: &mut Vec<u32>, y: u32) {
+    if !row.is_empty() {
+        row.sort_by_key(|&p| {
+            let luminance = (0.299 * p[0] as f32 + 0.587 * p[1] as f32 + 0.114 * p[2] as f32) as u8;
+            luminance
+        });
+        for (i, &x_pos) in indices.iter().enumerate() {
+            sorted_img.put_pixel(x_pos, y, image::Rgba(row[i]));
+        }
+        row.clear();
+        indices.clear();
+    }
 }
