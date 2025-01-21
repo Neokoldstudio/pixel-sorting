@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use image::{open, GrayImage, ImageBuffer, Luma, RgbaImage};
-use noise::{NoiseFn, Perlin, ScaleBias, Seedable};
+use noise::{NoiseFn, Perlin};
 use rand::Rng;
 
 fn main() {
@@ -9,8 +9,8 @@ fn main() {
     let layers = 50;
     let img_width = 1920;
     let img_height = 1080;
-    let scale_x = 0.1;
-    let scale_y = 0.1;
+    let scale_x = 0.2;
+    let scale_y = 0.2;
     let low_thresh = 0;
     let high_thresh = 220;
     let background = [0, 0, 0];
@@ -23,10 +23,10 @@ fn main() {
         img_height, img_width, thresholds, scale_x, scale_y, background,
     );
     img.save("output/perlin.png").expect("Failed to save image");
-    // chargement de l'image -> décommenter pour appliquer le tri de pixel sur une image existante
-    // let img = open("input.png")
-    //     .expect("Failed to open image")
-    //     .into_rgba8();
+    //chargement de l'image -> décommenter pour appliquer le tri de pixel sur une image existante
+    // let img = open("input/input.png")
+    //      .expect("Failed to open image")
+    //      .into_rgba8();
 
     // grayscale
     let gray_img = convert_to_luminance(&img);
