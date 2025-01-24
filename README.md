@@ -1,4 +1,4 @@
-# **Bleeding Edge** is a generative art piece based on pixel sorting work by Kim Asendorf, a Berlin-based generative artist who is versed in glitch art.
+## **Bleeding Edge** is a generative art piece based on pixel sorting work by Kim Asendorf, a Berlin-based generative artist who is well versed in glitch art.
 
 This program is made in rust.
 
