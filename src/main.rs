@@ -12,7 +12,7 @@ fn main() {
     let scale_x = 0.2;
     let scale_y = 0.2;
     let low_thresh = 0;
-    let high_thresh = 220;
+    let high_thresh = 200;
     let background = [0, 0, 0];
     //=============================================
 
